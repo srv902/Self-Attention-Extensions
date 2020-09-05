@@ -5,7 +5,7 @@ import torch.nn as nn
 # import 2D self attention layer from layers.py
 from layers import SA2D
 
-use_attention = True
+#use_attention = True
 # keep the variable name same as that used for convolution layer. Only the layer will change
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
@@ -83,7 +83,7 @@ class Bottleneck(nn.Module):
     expansion = 4
 
     def __init__(self, inplanes, planes, stride=1, downsample=None, groups=1,
-                 base_width=64, dilation=1, norm_layer=None):
+                 base_width=64, dilation=1, norm_layer=None, use_attention=False):
         super(Bottleneck, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
@@ -131,11 +131,14 @@ class ResNet(nn.Module):
 
     def __init__(self, block, layers, num_classes=1000, zero_init_residual=False,
                  groups=1, width_per_group=64, replace_stride_with_dilation=None,
-                 norm_layer=None):
+                 norm_layer=None, use_attention=False):
         super(ResNet, self).__init__()
         if norm_layer is None:
             norm_layer = nn.BatchNorm2d
         self._norm_layer = norm_layer
+
+        # use self-attention 3x3 layer in the Bottleneck. BasicBlock is not supported. 
+        self.use_attention = use_attention
 
         self.inplanes = 64
         self.dilation = 1
@@ -200,12 +203,12 @@ class ResNet(nn.Module):
 
         layers = []
         layers.append(block(self.inplanes, planes, stride, downsample, self.groups,
-                            self.base_width, previous_dilation, norm_layer))
+                            self.base_width, previous_dilation, norm_layer, use_attention=self.use_attention))
         self.inplanes = planes * block.expansion
         for _ in range(1, blocks):
             layers.append(block(self.inplanes, planes, groups=self.groups,
                                 base_width=self.base_width, dilation=self.dilation,
-                                norm_layer=norm_layer))
+                                norm_layer=norm_layer, use_attention=self.use_attention))
 
         return nn.Sequential(*layers)
 

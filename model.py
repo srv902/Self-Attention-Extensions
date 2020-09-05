@@ -11,19 +11,18 @@ from pytorch_model_summary import summary
 # import custom models from resnet.py
 from resnet import resnet18, resnet50
 
-def model_getter(name='resnet50', pretrained=False):
+def model_getter(name='resnet50', pretrained=False, use_attention=False):
     if name == 'resnet50':
-        return resnet50(pretrained=pretrained)
+        return resnet50(pretrained=pretrained,  use_attention=use_attention)
     elif name == 'resnet18':
         return resnet18(pretrained=pretrained)
     else:
         raise ValueError('Incorrect model name provided!')
 
-
 class Model(nn.Module):
-    def __init__(self, model_name='resnet50'):
+    def __init__(self, model_name='resnet50', use_attention=False):
         super(Model, self).__init__()
-        self.base = model_getter(model_name)
+        self.base = model_getter(model_name, use_attention=use_attention)
         self.model = nn.Sequential(self.base)
 
     def forward(self, input):
@@ -35,7 +34,7 @@ if __name__ == '__main__':
     input = torch.randn(bs, 3, height, width)
 
     model_name = 'resnet50'
-    resnet_att = Model(model_name=model_name)
+    resnet_att = Model(model_name=model_name, use_attention=True)
     res1 = resnet_att(input)
 
     # plain resnet model without attention layers
