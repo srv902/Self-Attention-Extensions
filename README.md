@@ -1,2 +1,2 @@
 # Attention-Augmented-CNN-Extensions
-A PyTorch implementation of Attention Augmented CNN https://arxiv.org/abs/1904.09925 and extensions to different downstream tasks
+An attempt on PyTorch based Self Attention Layer for both Image and Video based data. Further experiments on image and video datasets to be conducted to analyze the performance as well as limitation of Self Attention Layers.
